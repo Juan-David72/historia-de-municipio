@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>San Juan de Yapacaní - Comunidad Japonesa-Boliviana</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Animaciones */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes sakura {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Partículas flotantes (pétalos de sakura) */
+        .sakura-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .sakura {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(45deg, #ff69b4, #ffc0cb);
+            border-radius: 50% 0 50% 0;
+            animation: sakura linear infinite;
+            opacity: 0.7;
+        }
+
+        /* Header */
+        header {
+            position: relative;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .header-content {
+            z-index: 3;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .header-content h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient 3s ease infinite;
+        }
+
+        @keyframes gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #ddd;
+            margin-bottom: 30px;
+        }
+
+        .japanese-text {
+            font-size: 1.2rem;
+            color: #ff6b6b;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+
+        /* Navegación */
+        nav {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 50px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, transparent, transparent);
+        }
+
+        nav a:hover {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            transform: scale(1.1);
+        }
+
+        /* Secciones */
+        section {
+            min-height: 100vh;
+            padding: 80px 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 50px;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .history-card {
+            background: linear-gradient(135deg, #1e1e2e, #2d2d44);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .history-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+        }
+
+        .history-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(255, 107, 107, 0.2);
+        }
+
+        .year {
+            color: #ff6b6b;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        /* Juego Interactivo */
+        .game-container {
+            background: linear-gradient(135deg, #2d2d44, #1e1e2e);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 50px 0;
+            text-align: center;
+        }
+
+        .memory-game {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            max-width: 400px;
+            margin: 30px auto;
+        }
+
+        .memory-card {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #3d3d5c, #4a4a6a);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .memory-card:hover {
+            transform: scale(1.1);
+            border-color: #ff6b6b;
+        }
+
+        .memory-card.flipped {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            transform: rotateY(180deg);
+        }
+
+        .memory-card.matched {
+            background: linear-gradient(45deg, #48dbfb, #0abde3);
+            cursor: default;
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .stat {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 25px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Datos demográficos animados */
+        .demographics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .demo-card {
+            background: linear-gradient(135deg, #1e1e2e, #2d2d44);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-number {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #48dbfb, #0abde3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            border-radius: 4px;
+            width: 0%;
+            animation: fillBar 2s ease-out forwards;
+        }
+
+        @keyframes fillBar {
+            to { width: var(--width); }
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 50px 20px;
+            text-align: center;
+            border-top: 1px solid #333;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .social-link {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            transform: scale(1.2) rotate(360deg);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content h1 {
+                font-size: 2.5rem;
+            }
+            
+            .memory-game {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            nav {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin: 20px;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Partículas flotantes -->
+    <div class="sakura-container" id="sakuraContainer"></div>
+
+    <!-- Navegación -->
+    <nav>
+        <ul>
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#historia">Historia</a></li>
+            <li><a href="#juego">Juego</a></li>
+            <li><a href="#demografia">Demografía</a></li>
+        </ul>
+    </nav>
+
+    <!-- Header -->
+    <header id="inicio">
+        <div class="header-content">
+            <div class="japanese-text">サンファン・デ・ヤパカニ</div>
+            <h1>San Juan de Yapacaní</h1>
+            <p class="subtitle">Comunidad Japonesa-Boliviana</p>
+            <p class="subtitle">Una historia de migración, agricultura y prosperidad</p>
+        </div>
+    </header>
+
+    <!-- Historia -->
+    <section id="historia">
+        <div class="container">
+            <h2 class="section-title">Historia de Nuestra Comunidad</h2>
+            <div class="history-grid">
+                <div class="history-card">
+                    <div class="year">1955</div>
+                    <h3>Inicio de la Migración</h3>
+                    <p>Llegaron las primeras 88 personas desde Japón, marcando el inicio de una nueva comunidad en territorio boliviano. Comenzaron cultivando arroz secano, maíz, yuca y leguminosas.</p>
+                </div>
+                
+                <div class="history-card">
+                    <div class="year">1957</div>
+                    <h3>Cooperativa Agrícola</h3>
+                    <p>Se crea la Cooperativa Agrícola San Juan. Los colonos introdujeron la avicultura y comenzaron a cultivar cítricos, llegando a producir el 30% de gallinas de Bolivia en los años 70.</p>
+                </div>
+                
+                <div class="history-card">
+                    <div class="year">1966</div>
+                    <h3>Modernización Agrícola</h3>
+                    <p>Se introducen las primeras maquinarias agrícolas, incrementando notablemente la producción agropecuaria y mejorando la calidad de vida de la comunidad.</p>
+                </div>
+                
+                <div class="history-card">
+                    <div class="year">1969</div>
+                    <h3>Cultivo de Soya</h3>
+                    <p>Se introducen variedades de soya que se convertiría en uno de los cultivos típicos de la colonia antes de extenderse por toda Bolivia.</p>
+                </div>
+                
+                <div class="history-card">
+                    <div class="year">1992</div>
+                    <h3>Fin de la Migración</h3>
+                    <p>Culmina el proceso migratorio con un total de 1.685 inmigrantes japoneses llegados en 53 grupos a lo largo de 37 años.</p>
+                </div>
+                
+                <div class="history-card">
+                    <div class="year">2001</div>
+                    <h3>Municipio Independiente</h3>
+                    <p>San Juan se convierte en municipio independiente mediante la Ley N.º 2233, promulgada por el presidente Jorge Quiroga Ramírez el 26 de julio.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Juego Interactivo -->
+    <section id="juego">
+        <div class="container">
+            <h2 class="section-title">Memoria Cultural</h2>
+            <div class="game-container">
+                <h3>Juego de Memoria - Símbolos de San Juan</h3>
+                <p>¡Encuentra las parejas de símbolos que representan nuestra comunidad!</p>
+                
+                <div class="game-stats">
+                    <div class="stat">
+                        <div>Movimientos</div>
+                        <div id="moves">0</div>
+                    </div>
+                    <div class="stat">
+                        <div>Parejas</div>
+                        <div id="pairs">0/8</div>
+                    </div>
+                    <div class="stat">
+                        <div>Tiempo</div>
+                        <div id="timer">00:00</div>
+                    </div>
+                </div>
+                
+                <div class="memory-game" id="memoryGame"></div>
+                
+                <button class="btn" onclick="startGame()">Nueva Partida</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demografía -->
+    <section id="demografia">
+        <div class="container">
+            <h2 class="section-title">Datos Demográficos</h2>
+            <div class="demographics-grid">
+                <div class="demo-card">
+                    <div class="demo-number" data-target="10200">0</div>
+                    <h3>Habitantes Totales (2024)</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="--width: 100%"></div>
+                    </div>
+                </div>
+                
+                <div class="demo-card">
+                    <div class="demo-number" data-target="5485">0</div>
+                    <h3>Hombres</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="--width: 54%"></div>
+                    </div>
+                </div>
+                
+                <div class="demo-card">
+                    <div class="demo-number" data-target="4715">0</div>
+                    <h3>Mujeres</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="--width: 46%"></div>
+                    </div>
+                </div>
+                
+                <div class="demo-card">
+                    <div class="demo-number" data-target="1621">0</div>
+                    <h3>Superficie (km²)</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="--width: 75%"></div>
+                    </div>
+                </div>
+                
+                <div class="demo-card">
+                    <div class="demo-number" data-target="250">0</div>
+                    <h3>Altitud (m.s.n.m.)</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="--width: 25%"></div>
+                    </div>
+                </div>
+                
+                <div class="demo-card">
+                    <div class="demo-number" data-target="124">0</div>
+                    <h3>Distancia a Santa Cruz (km)</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="--width: 60%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <h3>San Juan de Yapacaní</h3>
+            <p>Una comunidad que une dos culturas con amor, trabajo y prosperidad</p>
+            <p>🇯🇵 ❤️ 🇧🇴</p>
+            <div class="social-links">
+                <a href="#" class="social-link">📧</a>
+                <a href="#" class="social-link">📱</a>
+                <a href="#" class="social-link">🌐</a>
+            </div>
+            <p style="margin-top: 30px; opacity: 0.7;">© 2024 San Juan de Yapacaní - Preservando nuestra historia</p>
+        </div>
+    </footer>
+
+    <script>
+        // Crear pétalos de sakura
+        function createSakura() {
+            const container = document.getElementById('sakuraContainer');
+            for (let i = 0; i < 20; i++) {
+                const sakura = document.createElement('div');
+                sakura.className = 'sakura';
+                sakura.style.left = Math.random() * 100 + '%';
+                sakura.style.animationDelay = Math.random() * 10 + 's';
+                sakura.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                container.appendChild(sakura);
+            }
+        }
+
+        // Juego de memoria
+        const symbols = ['🌾', '🐔', '🍊', '🌸', '⛩️', '🏔️', '🇯🇵', '🇧🇴'];
+        let cards = [...symbols, ...symbols];
+        let flippedCards = [];
+        let matches = 0;
+        let moves = 0;
+        let gameStarted = false;
+        let startTime = 0;
+        let timerInterval;
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function startGame() {
+            shuffle(cards);
+            matches = 0;
+            moves = 0;
+            flippedCards = [];
+            gameStarted = true;
+            startTime = Date.now();
+            
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+            
+            updateStats();
+            
+            const gameContainer = document.getElementById('memoryGame');
+            gameContainer.innerHTML = '';
+            
+            cards.forEach((symbol, index) => {
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.dataset.symbol = symbol;
+                card.dataset.index = index;
+                card.addEventListener('click', flipCard);
+                gameContainer.appendChild(card);
+            });
+        }
+
+        function flipCard() {
+            if (flippedCards.length === 2) return;
+            if (this.classList.contains('flipped') || this.classList.contains('matched')) return;
+            
+            this.classList.add('flipped');
+            this.textContent = this.dataset.symbol;
+            flippedCards.push(this);
+            
+            if (flippedCards.length === 2) {
+                moves++;
+                updateStats();
+                
+                if (flippedCards[0].dataset.symbol === flippedCards[1].dataset.symbol) {
+                    flippedCards[0].classList.add('matched');
+                    flippedCards[1].classList.add('matched');
+                    matches++;
+                    flippedCards = [];
+                    
+                    if (matches === 8) {
+                        clearInterval(timerInterval);
+                        setTimeout(() => alert('¡Felicitaciones! Has completado el juego.'), 500);
+                    }
+                } else {
+                    setTimeout(() => {
+                        flippedCards[0].classList.remove('flipped');
+                        flippedCards[1].classList.remove('flipped');
+                        flippedCards[0].textContent = '';
+                        flippedCards[1].textContent = '';
+                        flippedCards = [];
+                    }, 1000);
+                }
+                updateStats();
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('moves').textContent = moves;
+            document.getElementById('pairs').textContent = `${matches}/8`;
+        }
+
+        function updateTimer() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+            const seconds = (elapsed % 60).toString().padStart(2, '0');
+            document.getElementById('timer').textContent = `${minutes}:${seconds}`;
+        }
+
+        // Animar números demográficos
+        function animateNumbers() {
+            const numbers = document.querySelectorAll('.demo-number');
+            numbers.forEach(number => {
+                const target = parseInt(number.dataset.target);
+                let current = 0;
+                const increment = target / 100;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    number.textContent = Math.floor(current).toLocaleString();
+                }, 20);
+            });
+        }
+
+        // Observer para animar cuando entra en vista
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationDelay = '0s';
+                    entry.target.style.animation = 'fadeInUp 1s ease-out forwards';
+                    if (entry.target.id === 'demografia') {
+                        animateNumbers();
+                    }
+                }
+            });
+        });
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            createSakura();
+            startGame();
+            
+            document.querySelectorAll('section').forEach(section => {
+                observer.observe(section);
+            });
+            
+            // Navegación suave
+            document.querySelectorAll('nav a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const target = document.querySelector(link.getAttribute('href'));
+                    target.scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+        });
+
+        // Recrear sakura periódicamente
+        setInterval(createSakura, 20000);
+    </script>
+</body>
+</html>
